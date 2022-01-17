@@ -1,9 +1,10 @@
-import os.path
 import shutil
 import sys
 
 import xmltodict
 import json
+
+from pathlib import Path
 
 
 def transform(sip_dir, out_dir):
@@ -14,34 +15,38 @@ def transform(sip_dir, out_dir):
         |   representations folder and sub folders
     """
 
-    sip_name = os.path.basename(os.path.normpath(sip_dir)).split(' ')[0]
-    out_dir = os.path.join(out_dir, sip_name)
+    sip_name = sip_dir.stem.split(' ')[0]
+    out_dir = out_dir / sip_name
 
     # Overwrite existing files
-    if os.path.isdir(out_dir):
+    if out_dir.is_dir():
         print(f"Overwriting {out_dir}")
         shutil.rmtree(out_dir)
-        os.makedirs(os.path.join(out_dir))
+        out_dir.mkdir(parents=True, exist_ok=False)
+
+    # Copy representations folder(s)
+    representations_path = sip_dir / "representations"
+    if representations_path.exists():
+        shutil.copytree(representations_path, out_dir / "representations")
+    else:
+        print('Representations directory not found.')
+        print('Exiting.')
+        sys.exit(1)
 
     # Extract and normalise dc.xml to metadata.json file
-    sip_metadata_file = os.path.join(sip_dir, "metadata", "descriptive", "dc.xml")
-    if os.path.exists(sip_metadata_file):
+    sip_metadata_file = sip_dir / "metadata" / "descriptive" / "dc.xml"
+    if sip_metadata_file.exists:
         try:
-            os.makedirs(os.path.join(out_dir, "metadata"), exist_ok=True)
+            (out_dir / "metadata").mkdir(parents=True, exist_ok=True)
         except OSError as e:
             print("Error creating metadata directory.")
             print(e.args)
         else:
             json_metadata = xml_to_json(sip_metadata_file)
-            with open(os.path.join(out_dir, "metadata", "metadata.json"), "w") as json_file:
+            with open(out_dir / "metadata" / "metadata.json", "w") as json_file:
                 json_file.write(json_metadata)
     else:
         print('metadata/descriptive/dc.xml not found')
-
-    # Copy representations folder(s)
-    for file in os.listdir(sip_dir):
-        if os.path.isdir(os.path.join(sip_dir, file)) & file.startswith("rep"):
-            shutil.copytree(os.path.join(sip_dir, file), os.path.join(out_dir, file))
 
 
 def get_arg(index):
@@ -54,10 +59,10 @@ def get_arg(index):
 
 
 def validate_directories(sip_dir, output_dir):
-    if os.path.exists(sip_dir):
-        if os.path.isdir(sip_dir):
-            if os.path.exists(output_dir):
-                if os.path.isdir(output_dir):
+    if sip_dir.exists():
+        if sip_dir.is_dir():
+            if output_dir.exists():
+                if output_dir.is_dir():
                     return True
                 else:
                     print("Error: Output is not a directory")
@@ -75,29 +80,24 @@ def xml_to_json(file):
         try:
             obj = xmltodict.parse(xml.read())['simpledc']
         except KeyError:
-            print('Incorrect metadata format. Expected simpledc')
+            print('Incorrect metadata format. Expected simpledc.')
         else:
-            # Remove header elements
-            items_to_remove = []
+            metadata_dict = {"filename": "object/representations"}
             for key in obj:
-                if key.startswith('@'):
-                    items_to_remove.append(key)
-            for item in items_to_remove:
-                obj.pop(item)
-
-            json_obj = json.dumps(obj, indent=4)
+                if not key.startswith('@'):
+                    metadata_dict["dc."+key] = obj[key]
+            json_obj = json.dumps(metadata_dict, indent=4)
             return json_obj
 
 
 if __name__ == '__main__':
     numArgs = len(sys.argv)
-
     if numArgs == 3:
-        sip_directory = get_arg(1)
-        output_directory = get_arg(2)
+        sip_directory = Path(get_arg(1))
+        output_directory = Path(get_arg(2))
         if validate_directories(sip_directory, output_directory):
-            # TODO: Validate folder structure?
             transform(sip_directory, output_directory)
+            print("Process Complete.")
         else:
             sys.exit(1)
     else:
