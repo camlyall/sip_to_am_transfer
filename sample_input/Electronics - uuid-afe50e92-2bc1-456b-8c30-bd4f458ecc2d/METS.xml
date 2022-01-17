@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink" OBJID="uuid-afe50e92-2bc1-456b-8c30-bd4f458ecc2d" LABEL="" TYPE="SIP:MIXED" PROFILE="http://www.eark-project.com/METS/IP.xml" xsi:schemaLocation="http://www.loc.gov/METS/ schemas/IP.xsd http://www.w3.org/1999/xlink schemas/xlink.xsd">
+    <metsHdr CREATEDATE="2021-10-26T14:01:43.381+02:00" LASTMODDATE="2021-10-26T14:01:43.381+02:00" RECORDSTATUS="NEW">
+        <agent ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="SOFTWARE">
+            <name>RODA-in 2.4.0</name>
+            <note></note>
+        </agent>
+        <agent ROLE="CREATOR" TYPE="OTHER" OTHERTYPE="SOFTWARE">
+            <name>RODA-in 2.4.0</name>
+            <note></note>
+        </agent>
+    </metsHdr>
+    <dmdSec ID="uuid-842423DB-91DD-432C-9495-6455FEEDA841" CREATED="2021-10-26T14:01:43.382+02:00">
+        <mdRef ID="dc.xml" LOCTYPE="URL" MDTYPE="DC" MDTYPEVERSION="SimpleDC20021212" xlink:type="simple" xlink:href="metadata%2Fdescriptive%2Fdc.xml" MIMETYPE="text/xml" SIZE="505" CREATED="2021-10-26T14:01:43.382+02:00" CHECKSUM="F60E078A786124086112AFF3D76DA1FA841C8AF74A026B31B5EA532C7FBAD9A5" CHECKSUMTYPE="SHA-256"/>
+    </dmdSec>
+    <amdSec ID="uuid-59DA2604-FB44-4D98-8157-7C2A5095CE24"/>
+    <fileSec ID="uuid-1D05D802-718D-4900-97C3-CE8D4146B47A">
+        <fileGrp ID="uuid-43323CB8-1A39-40FB-AA71-97019FAFAB85" USE="Common Specification files root">
+            <fileGrp ID="uuid-59521703-E885-4916-82D4-64A27EFC925F" USE="representations"/>
+            <fileGrp ID="uuid-6BBF1AA9-9FEF-48C6-BE24-ADE85167A218" USE="data"/>
+            <fileGrp ID="uuid-4CD26F4F-7BC1-423A-B4E8-EBFDD5F4087D" USE="schemas">
+                <file ID="uuid-8A8F4F40-5981-431D-ADC1-D0CA14D3957D" MIMETYPE="application/octet-stream" SIZE="5299" CREATED="2021-10-26T14:01:43.419+02:00" CHECKSUM="F868E00F55A64D06F0D0E376B0316549002808E3A2AEE70040809405311B7DEE" CHECKSUMTYPE="SHA-256">
+                    <FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="schemas%2Fdc.xsd"/>
+                </file>
+                <file ID="uuid-8753C56B-D92C-4A7D-B841-E695891BBA42" MIMETYPE="application/octet-stream" SIZE="135096" CREATED="2021-10-26T14:01:43.420+02:00" CHECKSUM="77A6684B3228B1857E0F325C1656A208F2FA12F76AA12A0C9E92853B70EF42C2" CHECKSUMTYPE="SHA-256">
+                    <FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="schemas%2Fmets.xsd"/>
+                </file>
+                <file ID="uuid-E547042E-9E0F-47CD-89A4-8CA5AAB81E90" MIMETYPE="application/octet-stream" SIZE="3180" CREATED="2021-10-26T14:01:43.420+02:00" CHECKSUM="F1F5BB6003165CDD8F6C1FCC32F8FD1F965E1681010F3B9806D9460BCFFA8A3C" CHECKSUMTYPE="SHA-256">
+                    <FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="schemas%2Fxlink.xsd"/>
+                </file>
+            </fileGrp>
+            <fileGrp ID="uuid-82F196DC-6BA4-4C9B-B6D6-936A3F1F3B57" USE="submission"/>
+            <fileGrp ID="uuid-EDBFEA3F-B906-4735-8698-27DB094623E3" USE="documentation"/>
+        </fileGrp>
+    </fileSec>
+    <structMap ID="uuid-37EEC1EC-1D1F-4D53-A412-DD347E1E7E0E" TYPE="physical" LABEL="Common Specification structural map">
+        <div ID="uuid-140CC12E-DF88-46F6-B87D-5BD39D63014D" LABEL="uuid-afe50e92-2bc1-456b-8c30-bd4f458ecc2d">
+            <div ID="uuid-DF4F4F52-0409-4978-971A-3EFDD2030D3A" LABEL="metadata">
+                <div ID="uuid-D59915A4-6062-4BB3-B619-0ED1BF06DE29" LABEL="descriptive">
+                    <fptr FILEID="dc.xml"/>
+                </div>
+                <div ID="uuid-EFD0B0A7-EBB4-435B-B7EC-DEB8F822622D" LABEL="preservation"/>
+                <div ID="uuid-4E4102A5-3ACA-4D32-B113-03572ADD0A3E" LABEL="other"/>
+            </div>
+            <div ID="uuid-61D58130-D8E5-4F04-87F5-06C7F77E26F5" LABEL="representations">
+                <div ID="uuid-6257A827-9234-4094-8243-617204936653" LABEL="rep1">
+                    <mptr xlink:type="simple" xlink:href="representations%2Frep1%2FMETS.xml" LOCTYPE="URL"/>
+                </div>
+            </div>
+            <div ID="uuid-A7D2CB88-88C2-445A-8CB0-BC4DA1C9F64C" LABEL="data"/>
+            <div ID="uuid-43DDC0AF-67E7-4D2E-9692-E858DD725DC6" LABEL="schemas">
+                <fptr FILEID="uuid-8A8F4F40-5981-431D-ADC1-D0CA14D3957D"/>
+                <fptr FILEID="uuid-8753C56B-D92C-4A7D-B841-E695891BBA42"/>
+                <fptr FILEID="uuid-E547042E-9E0F-47CD-89A4-8CA5AAB81E90"/>
+            </div>
+            <div ID="uuid-30EDFC89-79F4-4E8D-A196-FF7CF8F110BD" LABEL="documentation"/>
+            <div ID="uuid-E7EEDCC9-F28B-408E-9EA2-07FAC4740F18" LABEL="submission"/>
+        </div>
+    </structMap>
+</mets>
