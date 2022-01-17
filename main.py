@@ -22,7 +22,7 @@ def transform(sip_dir, out_dir):
     if out_dir.is_dir():
         print(f"Overwriting {out_dir}")
         shutil.rmtree(out_dir)
-        out_dir.mkdir(parents=True, exist_ok=False)
+    out_dir.mkdir(parents=True, exist_ok=False)
 
     # Copy representations folder(s)
     representations_path = sip_dir / "representations"
@@ -44,7 +44,7 @@ def transform(sip_dir, out_dir):
         else:
             json_metadata = xml_to_json(sip_metadata_file)
             with open(out_dir / "metadata" / "metadata.json", "w") as json_file:
-                json_file.write(json_metadata)
+                json_file.write("["+json_metadata+"]")
     else:
         print('metadata/descriptive/dc.xml not found')
 
@@ -67,7 +67,7 @@ def validate_directories(sip_dir, output_dir):
                 else:
                     print("Error: Output is not a directory")
             else:
-                print("Error: Output directory doesn't exit")
+                return True
         else:
             print("Error: Input is not a directory")
     else:
