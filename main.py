@@ -23,6 +23,15 @@ def transform(sip_dir, out_dir):
         shutil.rmtree(out_dir)
         os.makedirs(os.path.join(out_dir))
 
+    # Copy representations folder(s)
+    representations_path = os.path.join(sip_dir, "representations")
+    if os.path.exists(representations_path):
+        shutil.copytree(os.path.join(representations_path), os.path.join(out_dir, "representations"))
+    else:
+        print('Representations directory not found.')
+        print('Exiting.')
+        sys.exit(1)
+
     # Extract and normalise dc.xml to metadata.json file
     sip_metadata_file = os.path.join(sip_dir, "metadata", "descriptive", "dc.xml")
     if os.path.exists(sip_metadata_file):
@@ -37,11 +46,6 @@ def transform(sip_dir, out_dir):
                 json_file.write(json_metadata)
     else:
         print('metadata/descriptive/dc.xml not found')
-
-    # Copy representations folder(s)
-    for file in os.listdir(sip_dir):
-        if os.path.isdir(os.path.join(sip_dir, file)) & file.startswith("rep"):
-            shutil.copytree(os.path.join(sip_dir, file), os.path.join(out_dir, file))
 
 
 def get_arg(index):
@@ -77,21 +81,17 @@ def xml_to_json(file):
         except KeyError:
             print('Incorrect metadata format. Expected simpledc')
         else:
-            # Remove header elements
-            items_to_remove = []
+            metadata_dict = {"filename": "object/representations"}
             for key in obj:
-                if key.startswith('@'):
-                    items_to_remove.append(key)
-            for item in items_to_remove:
-                obj.pop(item)
-
-            json_obj = json.dumps(obj, indent=4)
+                if not key.startswith('@'):
+                    metadata_dict["dc."+key] = obj[key]
+            json_obj = json.dumps(metadata_dict, indent=4)
+            print(json_obj)
             return json_obj
 
 
 if __name__ == '__main__':
     numArgs = len(sys.argv)
-
     if numArgs == 3:
         sip_directory = get_arg(1)
         output_directory = get_arg(2)
