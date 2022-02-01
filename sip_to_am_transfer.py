@@ -97,7 +97,7 @@ if __name__ == '__main__':
         output_directory = Path(get_arg(2))
         if validate_directories(sip_directory, output_directory):
             transform(sip_directory, output_directory)
-            print("Process Complete.")
+            print("Archivematica Transfer Generated.")
         else:
             sys.exit(1)
     else:
