@@ -49,15 +49,6 @@ def transform(sip_dir, out_dir):
         print('metadata/descriptive/dc.xml not found')
 
 
-def get_arg(index):
-    try:
-        sys.argv[index]
-    except IndexError:
-        return None
-    else:
-        return sys.argv[index]
-
-
 def validate_directories(sip_dir, output_dir):
     if sip_dir.exists():
         if sip_dir.is_dir():
@@ -93,8 +84,8 @@ def xml_to_json(file):
 if __name__ == '__main__':
     numArgs = len(sys.argv)
     if numArgs == 3:
-        sip_directory = Path(get_arg(1))
-        output_directory = Path(get_arg(2))
+        sip_directory = Path(sys.argv[1])
+        output_directory = Path(sys.argv[2])
         if validate_directories(sip_directory, output_directory):
             transform(sip_directory, output_directory)
             print("Archivematica Transfer Generated.")
