@@ -1,55 +1,12 @@
+import getopt
+import json
 import shutil
 import sys
-
 import xmltodict
-import json
-
 from pathlib import Path
 
 
-def transform(sip_dir, out_dir):
-    """
-        sip_name
-        |   Metadata
-            |   normalised DC.xml
-        |   representations folder and sub folders
-    """
-
-    sip_name = sip_dir.stem.split(' ')[0]
-    out_dir = out_dir / sip_name
-
-    # Overwrite existing files
-    if out_dir.is_dir():
-        print(f"Overwriting {out_dir}")
-        shutil.rmtree(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=False)
-
-    # Copy representations folder(s)
-    representations_path = sip_dir / "representations"
-    if representations_path.exists():
-        shutil.copytree(representations_path, out_dir / "representations")
-    else:
-        print('Representations directory not found.')
-        print('Exiting.')
-        sys.exit(1)
-
-    # Extract and normalise dc.xml to metadata.json file
-    sip_metadata_file = sip_dir / "metadata" / "descriptive" / "dc.xml"
-    if sip_metadata_file.exists:
-        try:
-            (out_dir / "metadata").mkdir(parents=True, exist_ok=True)
-        except OSError as e:
-            print("Error creating metadata directory.")
-            print(e.args)
-        else:
-            json_metadata = xml_to_json(sip_metadata_file)
-            with open(out_dir / "metadata" / "metadata.json", "w") as json_file:
-                json_file.write("["+json_metadata+"]")
-    else:
-        print('metadata/descriptive/dc.xml not found')
-
-
-def validate_directories(sip_dir, output_dir):
+def validate(sip_dir: Path, output_dir: Path) -> bool:
     if sip_dir.exists():
         if sip_dir.is_dir():
             if output_dir.exists():
@@ -66,8 +23,8 @@ def validate_directories(sip_dir, output_dir):
     return False
 
 
-def xml_to_json(file):
-    with open(file) as xml:
+def dc_xml_to_json(dc_file):
+    with open(dc_file) as xml:
         try:
             obj = xmltodict.parse(xml.read())['simpledc']
         except KeyError:
@@ -81,17 +38,73 @@ def xml_to_json(file):
             return json_obj
 
 
-if __name__ == '__main__':
-    numArgs = len(sys.argv)
-    if numArgs == 3:
-        sip_directory = Path(sys.argv[1])
-        output_directory = Path(sys.argv[2])
-        if validate_directories(sip_directory, output_directory):
-            transform(sip_directory, output_directory)
-            print("Archivematica Transfer Generated.")
+# Create multiple transfer files for each representation
+def transform(sip_dir: Path, output_dir: Path):
+
+    sip_name = sip_dir.stem.split(' ')[0]
+    sip_representations_dir = sip_dir / 'representations'
+
+    dc_metadata_file = sip_dir / "metadata" / "descriptive" / "dc.xml"
+    dc_json_data = ''
+    if dc_metadata_file.is_file():
+        dc_json_data = dc_xml_to_json(dc_metadata_file)
+
+    for sip_rep_dir in sip_representations_dir.iterdir():
+        if sip_rep_dir.stem.startswith('rep') and sip_rep_dir.is_dir():
+            transfer_name = sip_name + '-' + sip_rep_dir.name
+            transfer_output_dir = output_dir / transfer_name
+            if transfer_output_dir.is_dir():
+                print(f"Overwriting {transfer_output_dir}")
+                shutil.rmtree(transfer_output_dir)
+            transfer_output_dir.mkdir(parents=True, exist_ok=False)
+
+            # Copy representations folder(s)
+            shutil.copytree(sip_rep_dir, transfer_output_dir / "representations")
+
+            # Write DC metadata json
+            if dc_json_data != '':
+                (transfer_output_dir / "metadata").mkdir(parents=False, exist_ok=False)
+                with open(transfer_output_dir / "metadata" / "metadata.json", "w") as json_file:
+                    json_file.write("["+dc_json_data+"]")
+
         else:
-            sys.exit(1)
-    else:
-        print("Error: Command should have the form:")
-        print("python main.py <SIP Directory> <Output Directory>:")
-        sys.exit(1)
+            print('Error in representations structure')
+
+
+def main(argv):
+    sip_dir = ''
+    output_dir = ''
+    try:
+        opts, _ = getopt.getopt(argv,"hi:o:",["input=, output="])
+    except getopt.GetoptError:
+        print('metsgen.py -i <SIP directory> -o <Output Directory>')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print('metsgen.py -i <SIP Directory> -o <Output Directory>')
+            sys.exit(2)
+        elif opt in ("-i", "--input"):
+            input_arg = Path(arg)
+            if input_arg.is_dir() and (input_arg / 'representations').is_dir():
+                sip_dir = input_arg
+            else:
+                print("Input is not a valid SIP directory")
+                sys.exit(2)
+        elif opt in ("-o", "--output"):
+            output_arg = Path(arg)
+            if not output_arg.is_dir():
+                print("Creating output directoy:", output_arg)
+                output_arg.mkdir(parents=True, exist_ok=False)
+            output_dir = output_arg
+    if sip_dir == '':
+        print("No SIP given")
+        sys.exit(2)
+    if output_dir == '':
+        print("No Output directory given")
+        sys.exit(2)
+    if validate(sip_dir, output_dir):
+        transform(sip_dir, output_dir)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
