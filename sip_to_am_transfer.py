@@ -50,7 +50,7 @@ def transform(sip_dir: Path, output_dir: Path):
         dc_json_data = dc_xml_to_json(dc_metadata_file)
 
     for sip_rep_dir in sip_representations_dir.iterdir():
-        if sip_rep_dir.stem.startswith('rep') and sip_rep_dir.is_dir():
+        if sip_rep_dir.is_dir():
             transfer_name = sip_name + '-' + sip_rep_dir.name
             transfer_output_dir = output_dir / transfer_name
             if transfer_output_dir.is_dir():
@@ -66,9 +66,8 @@ def transform(sip_dir: Path, output_dir: Path):
                 (transfer_output_dir / "metadata").mkdir(parents=False, exist_ok=False)
                 with open(transfer_output_dir / "metadata" / "metadata.json", "w") as json_file:
                     json_file.write("["+dc_json_data+"]")
-
         else:
-            print('Error in representations structure')
+            print('Warning: File found in representations')
 
 
 def main(argv):
