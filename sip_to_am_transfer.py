@@ -59,7 +59,7 @@ def transform(sip_dir: Path, output_dir: Path):
             transfer_output_dir.mkdir(parents=True, exist_ok=False)
 
             # Copy representations folder(s)
-            shutil.copytree(sip_rep_dir, transfer_output_dir / "representations")
+            shutil.copytree(sip_rep_dir, transfer_output_dir / "representation")
 
             # Write DC metadata json
             if dc_json_data != '':
