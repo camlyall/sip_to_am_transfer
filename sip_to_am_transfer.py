@@ -105,7 +105,7 @@ def main(argv):
         elif opt in ("-o", "--output"):
             output_arg = Path(arg)
             if not output_arg.is_dir():
-                logging.info('Creating output directory:', output_arg.stem)
+                logging.info('Creating output directory:' + str(output_arg))
                 # print("Creating output directoy:", output_arg)
                 output_arg.mkdir(parents=True, exist_ok=False)
             output_dir = output_arg
