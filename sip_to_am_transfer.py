@@ -1,3 +1,4 @@
+import csv
 import getopt
 import json
 import shutil
@@ -5,6 +6,7 @@ import sys
 import xmltodict
 import logging
 from pathlib import Path
+from xml.etree import ElementTree as ET
 
 
 def validate(sip_dir: Path, output_dir: Path) -> bool:
@@ -40,6 +42,21 @@ def dc_xml_to_json(dc_file):
             return json_obj
 
 
+def dc_xml_to_dict(dc_file):
+    headers = ['filename']
+    content = ['objects/representations']
+
+    tree = ET.parse(dc_file)
+    root = tree.getroot()
+
+    for element in root:
+        headers.append('dc.' + element.tag)
+        content.append(element.text)
+    
+    csv_content = [headers, content]
+    return csv_content
+        
+
 # Create multiple transfer files for each representation
 def transform(sip_dir: Path, output_dir: Path):
 
@@ -48,9 +65,11 @@ def transform(sip_dir: Path, output_dir: Path):
 
     dc_metadata_file = sip_dir / "metadata" / "descriptive" / "dc.xml"
     dc_json_data = ''
+    dc_csv_data = ''
     if dc_metadata_file.is_file():
         logging.info('DC.xml metadata found')
-        dc_json_data = dc_xml_to_json(dc_metadata_file)
+        # dc_json_data = dc_xml_to_json(dc_metadata_file)
+        dc_csv_data = dc_xml_to_dict(dc_metadata_file)
         logging.info(dc_json_data)
     else:
         logging.info('DC.xml metadata not found')
@@ -65,7 +84,7 @@ def transform(sip_dir: Path, output_dir: Path):
             transfer_output_dir.mkdir(parents=True, exist_ok=False)
 
             # Copy representations folder(s)
-            shutil.copytree(sip_rep_dir, transfer_output_dir / "representation")
+            shutil.copytree(sip_rep_dir, transfer_output_dir / "representations")
             logging.info('Representations copied')
 
             # Write DC metadata json
@@ -74,6 +93,14 @@ def transform(sip_dir: Path, output_dir: Path):
                 with open(transfer_output_dir / "metadata" / "metadata.json", "w") as json_file:
                     json_file.write("["+dc_json_data+"]")
                     logging.info('metadata.json written')
+
+            # Write DC metadata csv
+            if dc_csv_data != '':
+                (transfer_output_dir / "metadata").mkdir(parents=False, exist_ok=False)
+                with open(transfer_output_dir / "metadata" / "metadata.csv", "w", newline='') as csv_file:
+                    csv_file_writer = csv.writer(csv_file)
+                    for row in dc_csv_data:
+                        csv_file_writer.writerow(row)
         else:
             logging.fatal('Warning: File found in representations')
             sys.exit(2)
