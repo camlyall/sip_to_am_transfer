@@ -63,16 +63,20 @@ def transform(sip_dir: Path, output_dir: Path):
     sip_name = sip_dir.stem.split(' ')[0]
     sip_representations_dir = sip_dir / 'representations'
 
-    dc_metadata_file = sip_dir / "metadata" / "descriptive" / "dc.xml"
+    descriptive_metadata_dir = sip_dir / 'metadata' / 'descriptive'
+
+    dc_metadata_file = ''
     dc_json_data = ''
-    dc_csv_data = ''
-    if dc_metadata_file.is_file():
-        logging.info('DC.xml metadata found')
-        # dc_json_data = dc_xml_to_json(dc_metadata_file)
-        dc_csv_data = dc_xml_to_dict(dc_metadata_file)
-        logging.info(dc_json_data)
+    if (descriptive_metadata_dir / 'dc.xml').is_file():
+        dc_metadata_file = descriptive_metadata_dir / 'dc.xml'
+    elif (descriptive_metadata_dir / 'DC.xml').is_file():
+        dc_metadata_file = descriptive_metadata_dir / 'DC.xml'
     else:
         logging.info('DC.xml metadata not found')
+
+    if dc_metadata_file != '':
+        logging.info(str(dc_metadata_file.stem) + ' metadata found')
+        dc_json_data = dc_xml_to_json(dc_metadata_file)
 
     for sip_rep_dir in sip_representations_dir.iterdir():
         if sip_rep_dir.is_dir():
