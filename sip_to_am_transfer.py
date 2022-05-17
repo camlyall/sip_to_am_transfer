@@ -67,6 +67,7 @@ def transform(sip_dir: Path, output_dir: Path):
 
     dc_metadata_file = ''
     dc_json_data = ''
+    dc_csv_data = ''
     if (descriptive_metadata_dir / 'dc.xml').is_file():
         dc_metadata_file = descriptive_metadata_dir / 'dc.xml'
     elif (descriptive_metadata_dir / 'DC.xml').is_file():
