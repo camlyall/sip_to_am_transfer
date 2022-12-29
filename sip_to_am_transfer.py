@@ -44,25 +44,8 @@ def dc_xml_to_json(dc_file):
                     logging.debug('Invalid DC key: ' + key)
             json_obj = json.dumps(metadata_dict, indent=4)
             return json_obj
-
-
-def dc_xml_to_dict(dc_file):
-    headers = ['filename']
-    content = ['objects/representations']
-
-    tree = ET.parse(dc_file)
-    root = tree.getroot()
-
-    for element in root:
-        if element.tag in VAILD_DC_TERMS:
-            headers.append('dc.' + element.tag)
-            content.append(element.text)
-    
-    csv_content = [headers, content]
-    print(csv_content)
-    return csv_content
         
-
+        
 # Create multiple transfer files for each representation
 def transform(sip_dir: Path, output_dir: Path):
 
