@@ -26,6 +26,8 @@ def validate(sip_dir: Path, output_dir: Path) -> bool:
     return False
 
 
+VAILD_DC_TERMS = ['abstract', 'accessRights', 'accrualMethod', 'accrualPeriodicity', 'accrualPolicy', 'alternative', 'audience', 'available', 'bibliographicCitation', 'conformsTo', 'contributor', 'coverage', 'created', 'creator', 'date', 'dateAccepted', 'dateCopyrighted', 'dateSubmitted', 'description', 'educationLevel', 'extent', 'format', 'hasFormat', 'hasPart', 'hasVersion', 'identifier', 'instructionalMethod', 'isFormatOf', 'isPartOf', 'isReferencedBy', 'isReplacedBy', 'isRequiredBy', 'issued', 'isVersionOf', 'language', 'license', 'mediator', 'medium', 'modified', 'provenance', 'publisher', 'references', 'relation', 'replaces', 'requires', 'rights', 'rghtsHolder', 'source', 'spatial', 'subject', 'tableOfContents', 'temporal', 'title', 'type', 'valid']
+
 def dc_xml_to_json(dc_file):
     with open(dc_file) as xml:
         try:
@@ -36,12 +38,13 @@ def dc_xml_to_json(dc_file):
         else:
             metadata_dict = {"filename": "object/representations"}
             for key in obj:
-                if not key.startswith('@'):
+                if key in VAILD_DC_TERMS:
                     metadata_dict["dc."+key] = obj[key]
+                else:
+                    logging.debug('Invalid DC key: ' + key)
             json_obj = json.dumps(metadata_dict, indent=4)
             return json_obj
 
-VAILD_DC_TERMS = ['abstract', 'accessRights', 'accrualMethod', 'accrualPeriodicity', 'accrualPolicy', 'alternative', 'audience', 'available', 'bibliographicCitation', 'conformsTo', 'contributor', 'coverage', 'created', 'creator', 'date', 'dateAccepted', 'dateCopyrighted', 'dateSubmitted', 'description', 'educationLevel', 'extent', 'format', 'hasFormat', 'hasPart', 'hasVersion', 'identifier', 'instructionalMethod', 'isFormatOf', 'isPartOf', 'isReferencedBy', 'isReplacedBy', 'isRequiredBy', 'issued', 'isVersionOf', 'language', 'license', 'mediator', 'medium', 'modified', 'provenance', 'publisher', 'references', 'relation', 'replaces', 'requires', 'rights', 'rghtsHolder', 'source', 'spatial', 'subject', 'tableOfContents', 'temporal', 'title', 'type', 'valid']
 
 def dc_xml_to_dict(dc_file):
     headers = ['filename']
@@ -122,6 +125,8 @@ def main(argv):
         opts, _ = getopt.getopt(argv,"hi:o:",["input=, output="])
         if len(opts) == 0:
             print("No flags given.")
+        elif len(opts) == 1 and opts[0][0] != '-h':
+            print("Insufficient flags given.")
     except getopt.GetoptError:
         logging.fatal('Incorrect script call format.')
         print("Error: Command should have the form:")
