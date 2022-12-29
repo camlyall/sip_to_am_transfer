@@ -41,6 +41,7 @@ def dc_xml_to_json(dc_file):
             json_obj = json.dumps(metadata_dict, indent=4)
             return json_obj
 
+VAILD_DC_TERMS = ['abstract', 'accessRights', 'accrualMethod', 'accrualPeriodicity', 'accrualPolicy', 'alternative', 'audience', 'available', 'bibliographicCitation', 'conformsTo', 'contributor', 'coverage', 'created', 'creator', 'date', 'dateAccepted', 'dateCopyrighted', 'dateSubmitted', 'description', 'educationLevel', 'extent', 'format', 'hasFormat', 'hasPart', 'hasVersion', 'identifier', 'instructionalMethod', 'isFormatOf', 'isPartOf', 'isReferencedBy', 'isReplacedBy', 'isRequiredBy', 'issued', 'isVersionOf', 'language', 'license', 'mediator', 'medium', 'modified', 'provenance', 'publisher', 'references', 'relation', 'replaces', 'requires', 'rights', 'rghtsHolder', 'source', 'spatial', 'subject', 'tableOfContents', 'temporal', 'title', 'type', 'valid']
 
 def dc_xml_to_dict(dc_file):
     headers = ['filename']
@@ -50,10 +51,12 @@ def dc_xml_to_dict(dc_file):
     root = tree.getroot()
 
     for element in root:
-        headers.append('dc.' + element.tag)
-        content.append(element.text)
+        if element.tag in VAILD_DC_TERMS:
+            headers.append('dc.' + element.tag)
+            content.append(element.text)
     
     csv_content = [headers, content]
+    print(csv_content)
     return csv_content
         
 
@@ -117,6 +120,8 @@ def main(argv):
     output_dir = ''
     try:
         opts, _ = getopt.getopt(argv,"hi:o:",["input=, output="])
+        if len(opts) == 0:
+            print("No flags given.")
     except getopt.GetoptError:
         logging.fatal('Incorrect script call format.')
         print("Error: Command should have the form:")
